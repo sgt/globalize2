@@ -32,6 +32,12 @@ class MigrationTest < ActiveSupport::TestCase
     assert_equal :datetime, created_at.type
     assert updated_at = columns.detect {|c| c.name == 'updated_at' }
     assert_equal :datetime, updated_at.type
+    
+    assert !Post.connection.index_exists?( :post_translations, :subject )
+    Post.add_translation_table_index :subject
+    assert Post.connection.index_exists?( :post_translations, :subject )
+    Post.remove_translation_table_index :subject
+    assert !Post.connection.index_exists?( :post_translations, :subject )
   end
   
   test 'globalize table dropped' do

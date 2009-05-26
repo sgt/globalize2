@@ -90,7 +90,6 @@ module Globalize
                 raise BadMigrationFieldType, "Bad field type for #{name}, should be :string or :text"
               end 
             end
-            translation_table_name = self.name.underscore + '_translations'
             self.connection.create_table(translation_table_name) do |t|
               t.references self.table_name.singularize
               t.string :locale
@@ -103,16 +102,27 @@ module Globalize
           end
 
           def drop_translation_table!
-            translation_table_name = self.name.underscore + '_translations'
             self.connection.remove_index translation_table_name, "#{self.table_name.singularize}_id"
             self.connection.drop_table translation_table_name
+          end
+          
+          def add_translation_table_index(column_name, options = {})
+            self.connection.add_index(translation_table_name, column_name, options)
+          end
+          
+          def remove_translation_table_index(options = {})
+            self.connection.remove_index(translation_table_name, options)
           end
           
           private
           
           def i18n_attr(attribute_name)
             self.base_class.name.underscore + "_translations.#{attribute_name}"
-          end          
+          end
+          
+          def translation_table_name
+            self.name.underscore + '_translations'
+          end        
         end
         
         module InstanceMethods
