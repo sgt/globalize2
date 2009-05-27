@@ -140,9 +140,12 @@ module Globalize
         module ClassMethods          
           def method_missing(method, *args)
             if method.to_s =~ /^find_by_(\w+)$/ && globalize_options[:translated_attributes].include?($1.to_sym)
-              find(:first, :joins => :globalize_translations,
+              fallbacks = I18n.fallbacks[I18n.locale]
+              results = find(:all, :joins => :globalize_translations,
               :conditions => [ "#{i18n_attr($1)} = ? AND #{i18n_attr('locale')} IN (?)",
-                args.first,I18n.fallbacks[I18n.locale].map{|tag| tag.to_s}])
+                args.first,fallbacks.map{|tag| tag.to_s}])
+              comp_f = lambda {|x| fallbacks.include?(x) ? fallbacks.index(x) : 99 }
+              results.empty? ? nil : results.sort {|x,y| comp_f.call(x.send($1).locale) <=> comp_f.call(y.send($1).locale)}[0]
             else
               super
             end

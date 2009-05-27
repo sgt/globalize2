@@ -238,10 +238,16 @@ class TranslatedTest < ActiveSupport::TestCase
   end
   
   test "works with simple dynamic finders" do
-    foo = Post.create :subject => 'foo'
+    I18n.locale = :en
+    foo_en = Post.create :subject => 'foo'
     Post.create :subject => 'bar'
+    I18n.locale = :de
+    foo_de = Post.create :subject => 'foo'
     post = Post.find_by_subject('foo')
-    assert_equal foo, post
+    assert_equal foo_de, post
+    I18n.locale = :en
+    post = Post.find_by_subject('foo')
+    assert_equal foo_en, post
   end
   
   test 'change attribute on globalized model' do
