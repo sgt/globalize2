@@ -1,6 +1,7 @@
 class Post < ActiveRecord::Base
   translates :subject, :content
   validates_presence_of :subject
+  validates_translated_uniqueness_of :subject
 end
 
 class Blog < ActiveRecord::Base

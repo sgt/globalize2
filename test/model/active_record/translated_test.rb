@@ -108,6 +108,18 @@ class TranslatedTest < ActiveSupport::TestCase
     assert post.save
   end
 
+  test "validates translated uniqueness of :subject" do
+    post = Post.new :subject => 'foo', :content => 'bar'
+    assert post.save # first foo saves ok
+    post = Post.new :subject => 'baz', :content => 'bar2'
+    assert post.save # non-conflicting post
+    post = Post.new :subject => 'foo', :content => 'bar3'
+    assert !post.save # second foo in the same locale throws an error
+    I18n.locale = 'de-DE'
+    post = Post.new :subject => 'foo', :content => 'bar3'
+    assert post.save # a foo in a different locale proceeds as planned
+  end
+
   test "returns the value for the correct locale, after locale switching" do
     post = Post.create :subject => 'foo'
     I18n.locale = 'de-DE'
