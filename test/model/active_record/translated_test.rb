@@ -404,6 +404,20 @@ class TranslatedTest < ActiveSupport::TestCase
     assert ["foo1", "foo1"], [post.subject, post.content]
   end
   
+  test "setting only one translation with set_translation" do
+    Post.locale = :de
+    post = Post.create :subject => "foo1", :content => "foo1"
+    Post.locale = :en
+    post.update_attributes( :subject => "bar1", :content => "bar1" )
+    
+    post.set_translation(:subject, :en, "bar2")
+    post.reload
+    
+    assert ["bar2", "bar1"], [post.subject, post.content]
+    Post.locale = :de
+    assert ["foo1", "foo1"], [post.subject, post.content]
+  end
+  
   test "setting only selected attributes with set_translations" do
     Post.locale = :de
     post = Post.create :subject => "foo1", :content => "foo1"

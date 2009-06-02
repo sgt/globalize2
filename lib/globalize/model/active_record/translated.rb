@@ -233,6 +233,10 @@ module Globalize
             end
           end
 
+          def set_translation(attr_name, locale, value)
+            set_translations( { locale => {attr_name => value} })
+          end
+
         end
       end
     end
