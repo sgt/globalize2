@@ -11,7 +11,7 @@ class ActiveSupport::TestCase
     ::ActiveRecord::Migration.verbose = false   # Quiet down the migration engine
     ::ActiveRecord::Base.establish_connection({
       :adapter => 'sqlite3',
-      :dbfile => ':memory:'
+      :database => ':memory:'
     })
     ::ActiveRecord::Base.silence do
       load schema_path
@@ -24,7 +24,6 @@ class ActiveSupport::TestCase
     end
   end
 end
-
 
 module ActiveRecord
   module ConnectionAdapters
